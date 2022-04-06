@@ -1,7 +1,7 @@
 class TicTacGame:
 
     def start_game(self):
-        while not self.check_winner():
+        while not (self.check_winner() or self.check_drawn()):
             self.show()
             current_cell = input()
             if self.validate_input(current_cell):
@@ -25,7 +25,7 @@ class TicTacGame:
             print('\n\n> ', end="")
 
     def validate_input(self, value) -> bool:
-        if not value.isdigit():
+        if not str(value).isdigit():
             self.__message = "Incorrect input: you must enter a digit\n"
             return False
 
@@ -65,10 +65,12 @@ class TicTacGame:
         if self.__check_line(range(2, 7, 2)):
             return True
 
+        return False
+
+    def check_drawn(self) -> bool:
         if self.__counter == 10:
             self.__message = "\nThe game is drawn\n"
             return True
-
         return False
 
     def __change_mark(self):
