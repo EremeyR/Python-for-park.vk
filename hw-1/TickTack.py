@@ -67,7 +67,7 @@ class TicTacGame:
 
         return False
 
-    def check_drawn(self) -> bool:
+    def check_drawn(self) -> bool:  # This method doesn't check a winner
         if self.__counter == 10:
             self.__message = "\nThe game is drawn\n"
             return True

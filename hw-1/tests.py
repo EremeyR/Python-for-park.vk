@@ -13,8 +13,20 @@ class TestStringMethods(unittest.TestCase):
         self.assertFalse(self.game.validate_input("v"))         # incorrect str
         self.assertFalse(self.game.validate_input("value"))     # incorrect str
 
-        self.game.set_sell(3)
-        self.assertFalse(self.game.validate_input("3"))         # double entry
+        for i in range(9):                                      # correct
+            self.assertTrue(self.game.validate_input(i))
+
+        for i in range(9):                                      # correct
+            self.assertTrue(self.game.validate_input(str(i)))
+
+        self.assertFalse(self.game.validate_input("-1"))
+        self.assertFalse(self.game.validate_input("9"))
+
+        for i in range(9):                                      # correct
+            self.game.set_sell(i)
+
+        for i in range(9):                                      # double entry
+            self.assertFalse(self.game.validate_input(str(i)))
 
         self.game.reset()
 
