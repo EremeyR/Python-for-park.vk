@@ -1,15 +1,3 @@
-def simple_open_tag_callback(open_tag):
-    print("Open", open_tag)
-
-
-def simple_close_tag_callback(close_tag):
-    print("Close", close_tag)
-
-
-def simple_data_callback(tag, data):
-    print(data, "| from", tag)
-
-
 def parse_tag(html_str: str, position):
     tag_list = []
 
@@ -41,19 +29,19 @@ def parse_html(html_str: str, open_tag_callback, data_callback, close_tag_callba
                 tag, position = parse_tag(html_str, position + 1)
                 open_tag_callback(tag)
 
-                html_stack.append([tag, ""])
+                html_stack.append("")
             else:
                 tag, position = parse_tag(html_str, position + 2)
 
-                closing_tag, closing_data = html_stack.pop()
-                data_callback(closing_tag, closing_data)
+                current_data = html_stack.pop()
+                data_callback(current_data)
 
                 close_tag_callback(tag)
         else:
             message, position = parse_message(html_str, position)
-            html_stack[-1][1] += message
+            html_stack[-1] += message
 
 
 if __name__ == '__main__':
-    html = "<p>text<internal>internal text</internal> txet</p>"
-    parse_html(html, simple_open_tag_callback, simple_data_callback, simple_close_tag_callback)
+    html = "<p>text<internal>internal text</internal> text</p>"
+    parse_html(html, lambda x: print("Open", x), lambda x: print("Data", x), lambda x: print("Close", x))
