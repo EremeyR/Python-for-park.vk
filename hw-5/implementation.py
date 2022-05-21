@@ -44,6 +44,7 @@ class LRUCache:
         """LRUCache getter"""
         result_node = self.dict.get(key)
         if result_node:
+            self.__rewrite(result_node.key, result_node.value)
             return result_node.value
 
         return None
@@ -61,14 +62,16 @@ class LRUCache:
             # self.size -= 1
 
     def __add(self, key, value):
-        self.head = self.Node(key, value)
         if self.size == 0:
+            self.head = self.Node(key, value)
             self.tail = self.head
         elif self.size == 1:
+            self.head = self.Node(key, value)
             self.head.next = self.tail
             self.tail.prev = self.head
         else:
             old_head = self.head
+            self.head = self.Node(key, value)
             self.head.next = old_head
             old_head.prev = self.head
 
