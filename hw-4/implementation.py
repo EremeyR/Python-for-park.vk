@@ -10,21 +10,17 @@ class CustomMeta(type):
     def __setattr__(cls, name, value):
         cls.__dict__[f"custom_{name}"] = value
 
-    def __str__(cls):
-        return "Custom_by_metaclass"
-
     def __new__(cls, clsname, bases, attrs):
         custom_attrs = {}
 
         for attr, value in attrs.items():
-            if attr.startswith("__"):
+            if attr.startswith("__") and attr.endswith("__"):
                 custom_attrs[attr] = value
             else:
                 custom_attrs[f"custom_{attr}"] = value
 
         custom_attrs["__setattr__"] = CustomMeta.__setattr__
-        custom_attrs["__str__"] = CustomMeta.__str__
-        return type(clsname, bases, custom_attrs)
+        return super().__new__(cls, clsname, bases, custom_attrs)
 
 # Part 2
 
@@ -35,6 +31,9 @@ class Integer:
     """
     def __init__(self):
         self.i = None
+
+    def __str__(self):
+        return "Custom_by_metaclass"
 
     def __set__(self, obj, val):
         if not isinstance(val, int):

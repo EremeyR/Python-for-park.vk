@@ -1,6 +1,6 @@
-import implementation as impt
-
 import unittest
+
+import implementation as impt
 
 
 class CustomClass(metaclass=impt.CustomMeta):
@@ -10,16 +10,40 @@ class CustomClass(metaclass=impt.CustomMeta):
         self.val = val
 
     def line(self):
-        return 100
+        return len(self.__str__())
 
     def __str__(self):
         return "Custom_by_metaclass"
 
 
 class Data:
-    num = impt.Integer()
-    name = impt.String()
-    price = impt.PositiveInteger()
+    __num = impt.Integer()
+    __name = impt.String()
+    __price = impt.PositiveInteger()
+
+    @property
+    def num(self):
+        return self.__num
+
+    @num.setter
+    def num(self, value):
+        self.__num = value
+
+    @property
+    def name(self):
+        return self.__name
+
+    @name.setter
+    def name(self, value):
+        self.__name = value
+
+    @property
+    def price(self):
+        return self.__price
+
+    @price.setter
+    def price(self, value):
+        self.__price = value
 
 
 class TestStringMethods(unittest.TestCase):
@@ -32,7 +56,7 @@ class TestStringMethods(unittest.TestCase):
         self.assertFalse(hasattr(inst, "x"))
 
         self.assertTrue(hasattr(inst, "custom_line"))
-        self.assertEqual(inst.custom_line(), 100)
+        self.assertEqual(inst.custom_line(), len("Custom_by_metaclass"))
         self.assertFalse(hasattr(inst, "line"))
 
         self.assertTrue(hasattr(inst, "custom_val"))
@@ -53,23 +77,14 @@ class TestStringMethods(unittest.TestCase):
     def test_descriptors(self):
         data = Data()
 
-        try:
-            data.num
-            self.fail()
-        except UnboundLocalError:
-            pass
+        with self.assertRaises(UnboundLocalError):
+            _ = data.num
 
-        try:
-            data.name
-            self.fail()
-        except UnboundLocalError:
-            pass
+        with self.assertRaises(UnboundLocalError):
+            _ = data.name
 
-        try:
-            data.price
-            self.fail()
-        except UnboundLocalError:
-            pass
+        with self.assertRaises(UnboundLocalError):
+            _ = data.price
 
         data.num = 42
         self.assertEqual(data.num, 42)
@@ -77,38 +92,27 @@ class TestStringMethods(unittest.TestCase):
         data.num = -42
         self.assertEqual(data.num, -42)
 
-        try:
+        with self.assertRaises(ValueError):
             data.num = 4.2
-            self.fail()
-        except ValueError:
-            pass
 
-        try:
+        with self.assertRaises(ValueError):
             data.num = "42"
-            self.fail()
-        except ValueError:
-            pass
+
+        self.assertEqual(data.num, -42)
 
         data.price = 42
         self.assertEqual(data.price, 42)
 
-        try:
+        with self.assertRaises(ValueError):
             data.price = -42
-            self.fail()
-        except ValueError:
-            pass
 
-        try:
+        with self.assertRaises(ValueError):
             data.price = 4.2
-            self.fail()
-        except ValueError:
-            pass
 
-        try:
+        with self.assertRaises(ValueError):
             data.price = "42"
-            self.fail()
-        except ValueError:
-            pass
+
+        self.assertEqual(data.price, 42)
 
         data.name = "Name"
         self.assertEqual(data.name, "Name")
@@ -116,11 +120,10 @@ class TestStringMethods(unittest.TestCase):
         data.name = "42"
         self.assertEqual(data.name, "42")
 
-        try:
+        with self.assertRaises(ValueError):
             data.name = 42
-            self.fail()
-        except ValueError:
-            pass
+
+        self.assertEqual(data.name, "42")
 
 
 if __name__ == '__main__':
