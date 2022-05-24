@@ -2,6 +2,16 @@ import unittest
 from custom_list import CustomList
 
 
+def is_equal(l_list, r_list):
+    if len(l_list) != len(r_list):
+        return False
+
+    for i, l_list_cell in enumerate(l_list):
+        if l_list_cell != r_list[i]:
+            return False
+    return True
+
+
 class TestStringMethods(unittest.TestCase):
     def test_sum_func(self):
         cust_lst = CustomList([1])
@@ -241,45 +251,69 @@ class TestStringMethods(unittest.TestCase):
         sub_lst_2 = CustomList([-4, -3, -2, -1])
         self.assertEqual(sub_lst_1 - sub_lst_2, CustomList([5, 5, 5, 5]))
 
+    def test_with_appends(self):
+        lst_1 = CustomList([])
+        lst_1.append(2)
+        lst_2 = []
+        self.assertEqual(lst_1 - lst_2, CustomList([2]))
+
+        lst_2.append(3)
+        lst_2.append(8)
+        self.assertEqual(lst_1 - lst_2, CustomList([-1, -8]))
+        self.assertEqual(lst_2 - lst_1, CustomList([1, 8]))
+
+        lst_1.append(-8)
+        self.assertEqual(lst_1 + lst_2, CustomList([5, 0]))
+        lst_1.append(-8)
+        self.assertEqual(lst_2 + lst_1, CustomList([5, 0, -8]))
+
     def test_logical_operations(self):
-        self.assertTrue(CustomList([]) == CustomList([]))
         self.assertTrue(CustomList([]) >= CustomList([]))
         self.assertTrue(CustomList([]) <= CustomList([]))
         self.assertFalse(CustomList([]) < CustomList([]))
         self.assertFalse(CustomList([]) > CustomList([]))
         self.assertFalse(CustomList([]) != CustomList([]))
+        self.assertTrue(is_equal(CustomList([]), CustomList([])))
 
         self.assertTrue(CustomList([3]) != CustomList([2]))
         self.assertTrue(CustomList([3]) >= CustomList([2]))
         self.assertTrue(CustomList([3]) > CustomList([2]))
         self.assertFalse(CustomList([3]) < CustomList([2]))
         self.assertFalse(CustomList([3]) <= CustomList([2]))
-        self.assertFalse(CustomList([3]) == CustomList([2]))
+        self.assertFalse(is_equal(CustomList([3]), CustomList([2])))
 
         self.assertTrue(CustomList([3]) != CustomList([0]))
         self.assertTrue(CustomList([3]) >= CustomList([0]))
         self.assertTrue(CustomList([3]) > CustomList([0]))
         self.assertFalse(CustomList([3]) < CustomList([0]))
         self.assertFalse(CustomList([3]) <= CustomList([0]))
-        self.assertFalse(CustomList([3]) == CustomList([0]))
+        self.assertFalse(is_equal(CustomList([3]), CustomList([0])))
 
-        self.assertTrue(CustomList([3]) == CustomList([3]))
         self.assertTrue(CustomList([3]) >= CustomList([3]))
         self.assertTrue(CustomList([3]) <= CustomList([3]))
         self.assertFalse(CustomList([3]) < CustomList([3]))
         self.assertFalse(CustomList([3]) > CustomList([3]))
         self.assertFalse(CustomList([3]) != CustomList([3]))
+        self.assertTrue(is_equal(CustomList([3]), CustomList([3])))
 
         self.assertTrue(CustomList([3, 8]) != CustomList([9]))
         self.assertTrue(CustomList([3, 8]) >= CustomList([9]))
         self.assertTrue(CustomList([3, 8]) > CustomList([9]))
         self.assertFalse(CustomList([3, 8]) < CustomList([9]))
         self.assertFalse(CustomList([3, 8]) <= CustomList([9]))
-        self.assertFalse(CustomList([3, 8]) == CustomList([9]))
+        self.assertFalse(is_equal(CustomList([3, 8]), CustomList([9])))
 
     def test_print(self):
         self.assertEqual(CustomList([1, 2, 3]).__str__(), "[1, 2, 3], sum: 6")
         self.assertEqual(CustomList([]).__str__(), "[], sum: 0")
+
+    def test_equal(self):
+        self.assertFalse(CustomList([3]) == CustomList([]))
+        self.assertFalse(CustomList([3]) == CustomList([2]))
+        self.assertFalse(CustomList([3]) == CustomList([3, 1]))
+        self.assertTrue(CustomList([3]) == CustomList([3]))
+        self.assertTrue(CustomList([]) == CustomList([]))
+        self.assertTrue(CustomList([3]) == CustomList([1, 2]))
 
 
 if __name__ == '__main__':
