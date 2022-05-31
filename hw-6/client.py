@@ -2,17 +2,11 @@
 
 import socket
 import threading
+import logging
 
 from config import server_port
 
 from utils import client_args_parser
-
-
-def get_urls(path):
-    """getting urls from file"""
-    with open(path, 'r') as file:
-        urls = file.read()
-    return urls.split()
 
 
 class Client:
@@ -37,7 +31,7 @@ class Client:
 
     def client_thread(self):
         """thread for requests"""
-        urls = get_urls(self.urls_path)
+        urls = self.get_urls()
         for url in urls:
             sock = socket.socket()
             sock.connect(("", server_port))
@@ -45,8 +39,15 @@ class Client:
             data = sock.recv(1024)
             print(f"{url}: {data.decode('utf8')}")
 
+    def get_urls(self):
+        """getting urls from file"""
+        with open(self.urls_path, 'r') as file:
+            urls = file.read()
+        return urls.split()
+
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
     args = client_args_parser()
 
     client = Client(args.m, args.p)

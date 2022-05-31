@@ -2,7 +2,6 @@
 
 import socket
 import threading
-import re
 import json
 import logging
 
@@ -11,12 +10,28 @@ from urllib.error import HTTPError, URLError
 from urllib.request import urlopen
 from collections import Counter
 
-
-import html2text
+from html.parser import HTMLParser
 
 from config import server_port
 
 from utils import server_args_parser
+
+
+class HTMLWordTop(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.data = ""
+
+    def handle_data(self, data):
+        self.data += f" {data}"
+
+    def get_top(self):
+        data = self.data
+        self.data = ""
+        return dict(Counter(data.split()).most_common(5))
+
+    def error(self, message: str):
+        pass
 
 
 class Server:
@@ -56,11 +71,7 @@ class Server:
 
     def queue_worker(self):
         """worker for Server class"""
-        html_parser = html2text.HTML2Text()
-        html_parser.ignore_links = True
-        html_parser.ignore_images = True
-        html_parser.ignore_tables = True
-        html_parser.ignore_emphasis = True
+        html_parser = HTMLWordTop()
 
         while True:
             url, client = self.queue.get()
@@ -71,31 +82,24 @@ class Server:
             except HTTPError:
                 logging.error("Worker: connection error")
                 client.send("connection error".encode())
-                return
             except URLError:
                 logging.error("Worker: no address associated")
                 client.send("Worker: no address associated with".encode())
-                return
             except socket.timeout:
                 logging.error("Worker: the read operation timed out")
                 client.send("The read operation timed out".encode())
-                return
 
             try:
-                text = html_parser.handle(resp.read().decode())
+                html_parser.feed(resp.read().decode())
+                top = html_parser.get_top()
             except UnicodeDecodeError:
                 logging.error("HTML parsing error")
                 client.send("HTML parsing error".encode())
-                return
             except socket.timeout:
                 logging.error("HTML parsing operation timed out")
                 client.send("HTML parsing operation timed out".encode())
-                return
 
-            text = re.sub(r'[^\w\s]', '', text)
-
-            _dict = dict(Counter(text.split()).most_common(self.top_size))
-            most_common_json = json.dumps(_dict, indent=4, ensure_ascii=False)
+            most_common_json = json.dumps(top, indent=4, ensure_ascii=False)
 
             client.send(bytes(most_common_json, 'UTF-8'))
 
