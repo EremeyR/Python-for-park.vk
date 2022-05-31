@@ -149,18 +149,18 @@ class TestStringMethods(unittest.TestCase):
         cache.set("k2", "val2")
         cache.set("k3", "val3")
 
-        cache.set("k1_new", "val1_new")
+        cache.set("k2", "val2_new")
 
-        self.assertTrue(check_condition(cache, [["k1_new", "val1_new"],
+        self.assertTrue(check_condition(cache, [["k2", "val2_new"],
                                                 ["k3", "val3"],
-                                                ["k2", "val2"]]))
+                                                ["k1", "val1"]]))
 
         cache.set("k4", "val4")
         cache.set("k5", "val5")
 
         self.assertTrue(check_condition(cache, [["k5", "val5"],
                                                 ["k4", "val4"],
-                                                ["k1_new", "val1_new"]]))
+                                                ["k2", "val2_new"]]))
 
         cache.set("k6", "val6")
 
