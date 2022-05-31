@@ -24,7 +24,7 @@ class MockClient:
 
         def __init__(self, url):
             self.html = f"<{url}>" \
-                        f"one two three four two three four three four four _" \
+                        f"one two three four two three four three four four" \
                         f"</{url}>"
 
         async def text(self):
